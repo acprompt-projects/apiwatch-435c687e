@@ -1,0 +1,36 @@
+===
+# APIWatch Configuration
+endpoints:
+  - name: Google
+    url: https://www.google.com
+    method: GET
+    interval_ms: 30000
+    timeout_ms: 5000
+    expected_status: 200
+    headers: {}
+
+  - name: GitHub API
+    url: https://api.github.com/status
+    method: GET
+    interval_ms: 60000
+    timeout_ms: 8000
+    expected_status: 200
+    headers:
+      Accept: application/vnd.github+json
+
+  - name: Example POST
+    url: https://httpbin.org/post
+    method: POST
+    interval_ms: 120000
+    timeout_ms: 10000
+    expected_status: 200
+    headers:
+      Content-Type: application/json
+    body: '{"test": true}'
+
+history:
+  retention_days: 30
+
+alerts:
+  # alert on consecutive_failures >= threshold
+  consecutive_failures: 3

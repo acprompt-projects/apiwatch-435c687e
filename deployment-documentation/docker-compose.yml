@@ -1,0 +1,40 @@
+===
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: apiwatch
+      POSTGRES_PASSWORD: apiwatch_secret
+      POSTGRES_DB: apiwatch
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U apiwatch"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  apiwatch:
+    build:
+      context: ..
+      dockerfile: deployment-documentation/Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://apiwatch:apiwatch_secret@db:5432/apiwatch
+      NODE_ENV: production
+      PORT: 3000
+      CONFIG_PATH: /app/config.yaml
+    volumes:
+      - ../config.example.yaml:/app/config.yaml:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  pgdata:
